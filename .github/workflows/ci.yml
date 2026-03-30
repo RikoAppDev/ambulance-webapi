@@ -47,7 +47,7 @@ jobs:
       id: meta
       uses: docker/metadata-action@v5.7.0
       with:
-        images: rikoappdev/ambulance-wl-webapi
+        images: ricoappdev/ambulance-wl-webapi
         tags: |
           type=schedule
           type=ref,event=branch
