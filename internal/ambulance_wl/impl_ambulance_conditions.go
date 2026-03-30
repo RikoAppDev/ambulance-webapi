@@ -1,18 +1,29 @@
 package ambulance_wl
 
 import (
-    "net/http"
+	"net/http"
 
-    "github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin"
 )
 
 type implAmbulanceConditionsAPI struct {
 }
 
 func NewAmbulanceConditionsApi() AmbulanceConditionsAPI {
-    return &implAmbulanceConditionsAPI{}
+	return &implAmbulanceConditionsAPI{}
 }
 
+// GetConditions - Provides the list of conditions associated with ambulance
 func (o implAmbulanceConditionsAPI) GetConditions(c *gin.Context) {
-    c.AbortWithStatus(http.StatusNotImplemented)
+	// update ambulance document
+	updateAmbulanceFunc(c, func(
+		c *gin.Context,
+		ambulance *Ambulance,
+	) (updatedAmbulance *Ambulance, responseContent interface{}, status int) {
+		result := ambulance.PredefinedConditions
+		if result == nil {
+			result = []Condition{}
+		}
+		return nil, result, http.StatusOK
+	})
 }
