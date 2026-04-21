@@ -17,8 +17,24 @@ import (
 type AmbulanceConditionsAPI interface {
 
 
+    // CreateCondition Post /api/waiting-list/:ambulanceId/condition
+    // Saves new condition into the list of predefined conditions 
+     CreateCondition(c *gin.Context)
+
+    // DeleteCondition Delete /api/waiting-list/:ambulanceId/condition/:conditionCode
+    // Deletes specific predefined condition 
+     DeleteCondition(c *gin.Context)
+
+    // GetCondition Get /api/waiting-list/:ambulanceId/condition/:conditionCode
+    // Provides details about a specific predefined condition 
+     GetCondition(c *gin.Context)
+
     // GetConditions Get /api/waiting-list/:ambulanceId/condition
     // Provides the list of conditions associated with ambulance 
      GetConditions(c *gin.Context)
+
+    // UpdateCondition Put /api/waiting-list/:ambulanceId/condition/:conditionCode
+    // Updates specific predefined condition 
+     UpdateCondition(c *gin.Context)
 
 }

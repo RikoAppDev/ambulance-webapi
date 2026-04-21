@@ -62,6 +62,7 @@ func DefaultHandleFunc(c *gin.Context) {
 }
 
 type ApiHandleFunctions struct {
+
 	// Routes for the AmbulanceConditionsAPI part of the API
 	AmbulanceConditionsAPI AmbulanceConditionsAPI
 	// Routes for the AmbulanceWaitingListAPI part of the API
@@ -71,12 +72,36 @@ type ApiHandleFunctions struct {
 }
 
 func getRoutes(handleFunctions ApiHandleFunctions) []Route {
-	return []Route{
+	return []Route{ 
+		{
+			"CreateCondition",
+			http.MethodPost,
+			"/api/waiting-list/:ambulanceId/condition",
+			handleFunctions.AmbulanceConditionsAPI.CreateCondition,
+		},
+		{
+			"DeleteCondition",
+			http.MethodDelete,
+			"/api/waiting-list/:ambulanceId/condition/:conditionCode",
+			handleFunctions.AmbulanceConditionsAPI.DeleteCondition,
+		},
+		{
+			"GetCondition",
+			http.MethodGet,
+			"/api/waiting-list/:ambulanceId/condition/:conditionCode",
+			handleFunctions.AmbulanceConditionsAPI.GetCondition,
+		},
 		{
 			"GetConditions",
 			http.MethodGet,
 			"/api/waiting-list/:ambulanceId/condition",
 			handleFunctions.AmbulanceConditionsAPI.GetConditions,
+		},
+		{
+			"UpdateCondition",
+			http.MethodPut,
+			"/api/waiting-list/:ambulanceId/condition/:conditionCode",
+			handleFunctions.AmbulanceConditionsAPI.UpdateCondition,
 		},
 		{
 			"CreateWaitingListEntry",
@@ -119,6 +144,18 @@ func getRoutes(handleFunctions ApiHandleFunctions) []Route {
 			http.MethodDelete,
 			"/api/ambulance/:ambulanceId",
 			handleFunctions.AmbulancesAPI.DeleteAmbulance,
+		},
+		{
+			"GetAmbulance",
+			http.MethodGet,
+			"/api/ambulance/:ambulanceId",
+			handleFunctions.AmbulancesAPI.GetAmbulance,
+		},
+		{
+			"UpdateAmbulance",
+			http.MethodPut,
+			"/api/ambulance/:ambulanceId",
+			handleFunctions.AmbulancesAPI.UpdateAmbulance,
 		},
 	}
 }

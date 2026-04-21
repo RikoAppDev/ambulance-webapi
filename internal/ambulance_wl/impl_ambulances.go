@@ -88,6 +88,67 @@ func (o *implAmbulancesAPI) CreateAmbulance(c *gin.Context) {
 	}
 }
 
+// GetAmbulance - Provides details about the ambulance
+func (o *implAmbulancesAPI) GetAmbulance(c *gin.Context) {
+	value, exists := c.Get("db_service")
+	if !exists {
+		c.JSON(http.StatusInternalServerError, gin.H{"status": "Internal Server Error", "message": "db not found", "error": "db not found"})
+		return
+	}
+	db, ok := value.(db_service.DbService[Ambulance])
+	if !ok {
+		c.JSON(http.StatusInternalServerError, gin.H{"status": "Internal Server Error", "message": "db context is not of required type", "error": "cannot cast db context to db_service.DbService"})
+		return
+	}
+
+	ambulanceId := c.Param("ambulanceId")
+	ambulance, err := db.FindDocument(c, ambulanceId)
+	switch err {
+	case nil:
+		c.JSON(http.StatusOK, ambulance)
+	case db_service.ErrNotFound:
+		c.JSON(http.StatusNotFound, gin.H{"status": "Not Found", "message": "Ambulance not found", "error": err.Error()})
+	default:
+		c.JSON(http.StatusBadGateway, gin.H{"status": "Bad Gateway", "message": "Failed to load ambulance from database", "error": err.Error()})
+	}
+}
+
+// UpdateAmbulance - Updates specific ambulance
+func (o *implAmbulancesAPI) UpdateAmbulance(c *gin.Context) {
+	value, exists := c.Get("db_service")
+	if !exists {
+		c.JSON(http.StatusInternalServerError, gin.H{"status": "Internal Server Error", "message": "db not found", "error": "db not found"})
+		return
+	}
+	db, ok := value.(db_service.DbService[Ambulance])
+	if !ok {
+		c.JSON(http.StatusInternalServerError, gin.H{"status": "Internal Server Error", "message": "db context is not of required type", "error": "cannot cast db context to db_service.DbService"})
+		return
+	}
+
+	ambulanceId := c.Param("ambulanceId")
+	var ambulance Ambulance
+	if err := c.BindJSON(&ambulance); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"status": "Bad Request", "message": "Invalid request body", "error": err.Error()})
+		return
+	}
+
+	if ambulance.Id != "" && ambulance.Id != ambulanceId {
+		c.JSON(http.StatusForbidden, gin.H{"status": "Forbidden", "message": "Ambulance ID in body does not match the path parameter"})
+		return
+	}
+
+	err := db.UpdateDocument(c, ambulanceId, &ambulance)
+	switch err {
+	case nil:
+		c.JSON(http.StatusOK, ambulance)
+	case db_service.ErrNotFound:
+		c.JSON(http.StatusNotFound, gin.H{"status": "Not Found", "message": "Ambulance not found", "error": err.Error()})
+	default:
+		c.JSON(http.StatusBadGateway, gin.H{"status": "Bad Gateway", "message": "Failed to update ambulance in database", "error": err.Error()})
+	}
+}
+
 // DeleteAmbulance - Deletes specific ambulance
 func (o *implAmbulancesAPI) DeleteAmbulance(c *gin.Context) {
 	// get db service from context
